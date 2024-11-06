@@ -1,17 +1,35 @@
+import cv2
 from ultralytics import YOLO
 
-# Load a model
-model = YOLO("yolov8n.pt")  # pretrained YOLO11n model
+# Load the YOLO model
+model = YOLO("yolov8n.pt")  # Make sure the model file is named correctly
 
-# Run batched inference on a list of images
-results = model(source="images/bus.jpg", stream=True)  # return a generator of Results objects
+# Open the video file
+video_path = "images/cats.mp4"
+cap = cv2.VideoCapture(video_path)
 
-# Process results generator
-for result in results:
-    boxes = result.boxes  # Boxes object for bounding box outputs
-    masks = result.masks  # Masks object for segmentation masks outputs
-    keypoints = result.keypoints  # Keypoints object for pose outputs
-    probs = result.probs  # Probs object for classification outputs
-    obb = result.obb  # Oriented boxes object for OBB outputs
-    result.show()  # display to screen
-    result.save(filename="result.jpg")  # save to disk
+# Loop through the video frames
+while cap.isOpened():
+    # Read a frame from the video
+    success, frame = cap.read()
+
+    if success:
+        # Run YOLO inference on the frame
+        results = model.predict(frame)
+
+        # Visualize the results on the frame
+        annotated_frame = results[0].plot()
+
+        # Display the annotated frame
+        cv2.imshow("YOLO Inference", annotated_frame)
+
+        # Break the loop if 'q' is pressed
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+    else:
+        # Break the loop if the end of the video is reached
+        break
+
+# Release the video capture object and close the display window
+cap.release()
+cv2.destroyAllWindows()
