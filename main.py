@@ -2,15 +2,14 @@ import cv2
 from ultralytics import YOLO
 
 # Load the YOLO model
-model = YOLO("yolov8n.pt")  # Make sure the model file is named correctly
+model = YOLO("yolov8m.pt")  # Ensure the correct model filename
 
-# Open the video file
-video_path = "images/cats.mp4"
-cap = cv2.VideoCapture(video_path)
+# Open the default webcam
+cap = cv2.VideoCapture(0)
 
-# Loop through the video frames
+# Loop through the video frames from the webcam
 while cap.isOpened():
-    # Read a frame from the video
+    # Read a frame from the webcam
     success, frame = cap.read()
 
     if success:
@@ -21,15 +20,15 @@ while cap.isOpened():
         annotated_frame = results[0].plot()
 
         # Display the annotated frame
-        cv2.imshow("YOLO Inference", annotated_frame)
+        cv2.imshow("YOLO Webcam Inference", annotated_frame)
 
         # Break the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
     else:
-        # Break the loop if the end of the video is reached
+        # Break the loop if the frame could not be read
         break
 
-# Release the video capture object and close the display window
+# Release the webcam and close the display window
 cap.release()
 cv2.destroyAllWindows()
