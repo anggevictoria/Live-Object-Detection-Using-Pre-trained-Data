@@ -4,11 +4,14 @@ import cv2
 # Load a COCO-pretrained YOLOv8n model
 model = YOLO("yolov8n.pt")
 
-# Display model information (optional)
-#model.info()
+# Run inference with bounding boxes displayed on the image
+results = model.predict(source="images/bus.jpg", conf=0.4)
 
-# Train the model on the COCO8 example dataset for 100 epochs
-#results = model.train(data="coco8.yaml", epochs=100, imgsz=640)
+# Retrieve the annotated image directly from the results
+for result in results:
+    annotated_img = result.plot()  # This provides the image with bounding boxes drawn
 
-# Run inference with the YOLOv8n model on the 'bus.jpg' image
-results = model("images/meeting.jpg")  # predict on an image
+    # Display the annotated image with OpenCV
+    cv2.imshow("Inference Result", annotated_img)
+    cv2.waitKey(0)  # Keep the window open until a key is pressed
+    cv2.destroyAllWindows()
