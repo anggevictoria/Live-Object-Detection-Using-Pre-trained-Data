@@ -1,17 +1,17 @@
 from ultralytics import YOLO
-import cv2
 
-# Load a COCO-pretrained YOLOv8n model
-model = YOLO("yolov8n.pt")
+# Load a model
+model = YOLO("yolov8n.pt")  # pretrained YOLO11n model
 
-# Run inference with bounding boxes displayed on the image
-results = model.predict(source="images/bus.jpg", conf=0.4)
+# Run batched inference on a list of images
+results = model(source="images/bus.jpg", stream=True)  # return a generator of Results objects
 
-# Retrieve the annotated image directly from the results
+# Process results generator
 for result in results:
-    annotated_img = result.plot()  # This provides the image with bounding boxes drawn
-
-    # Display the annotated image with OpenCV
-    cv2.imshow("Inference Result", annotated_img)
-    cv2.waitKey(0)  # Keep the window open until a key is pressed
-    cv2.destroyAllWindows()
+    boxes = result.boxes  # Boxes object for bounding box outputs
+    masks = result.masks  # Masks object for segmentation masks outputs
+    keypoints = result.keypoints  # Keypoints object for pose outputs
+    probs = result.probs  # Probs object for classification outputs
+    obb = result.obb  # Oriented boxes object for OBB outputs
+    result.show()  # display to screen
+    result.save(filename="result.jpg")  # save to disk
